@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
@@ -36,7 +45,7 @@ export class AuthController {
   }
 
   // @UseGuards(JwtAuthGuard) // global jwt guard enabled
-  @Role(UserRole.RECRUITER)
+  // @Role(UserRole.RECRUITER)
   @Get('profile')
   async getProfile(@Req() req) {
     return this.usersService.findOne(req.user.id);
@@ -49,12 +58,14 @@ export class AuthController {
 
   @Public()
   @Post('verify-email')
+  @HttpCode(HttpStatus.OK) // changes default 201 created to 200 ok
   async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
     return this.authService.verifyEmail(verifyEmailDto);
   }
 
   @Public()
   @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
   async resendVerification(
     @Body() resendVerificationDto: ResendVerificationDto,
   ) {
@@ -62,17 +73,19 @@ export class AuthController {
   }
 
   @Public()
+  @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
   @Public()
+  @HttpCode(HttpStatus.OK)
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
   }
-
+  @HttpCode(HttpStatus.OK)
   @Post('change-password')
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
@@ -82,11 +95,13 @@ export class AuthController {
   }
 
   @Post('logout')
+  @HttpCode(HttpStatus.OK)
   async logout(@Body() logoutDto: LogoutDto) {
     return this.authService.logout(logoutDto);
   }
 
   @Post('logout-all')
+  @HttpCode(HttpStatus.OK)
   async logoutAllSessionAndDevices(@Req() req) {
     return this.authService.logoutAllSessionAndDevices(req.user.id);
   }

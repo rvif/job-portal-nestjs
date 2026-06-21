@@ -5,24 +5,20 @@ import { UserRole } from 'src/users/users.entity';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext) {
-    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
-      ROLE_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const requiredRole = this.reflector.getAllAndOverride<UserRole>(ROLE_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
-    if (!requiredRoles) {
+    if (!requiredRole) {
       // no role metadata, since this guard is global, allow access
       return true;
     }
 
     const req = context.switchToHttp().getRequest();
-    if (requiredRoles.includes(req.user.role)) {
-      return true;
-    }
-
-    return false;
+    return requiredRole === req.user.role;
   }
 }

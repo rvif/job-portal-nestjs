@@ -13,6 +13,9 @@ import { RoleGuard } from './auth/guards/role.guard';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
 import { MailModule } from './mail/mail.module';
 import { Otp } from './auth/entities/email-verification-otp.entity';
+import { OrganizationModule } from './organization/organization.module';
+import { Organization } from './organization/entities/organization.entity';
+import { OrganizationMember } from './organization/entities/organization-members.entity';
 
 @Module({
   imports: [
@@ -29,12 +32,13 @@ import { Otp } from './auth/entities/email-verification-otp.entity';
         username: configService.getOrThrow('DB_USERNAME'),
         password: configService.getOrThrow('DB_PASSWORD'),
         database: configService.getOrThrow('DB_NAME'),
-        entities: [User, RefreshToken, Otp],
+        entities: [User, RefreshToken, Otp, Organization, OrganizationMember],
         synchronize: true, // set false for production, and do manual migrations
       }),
     }),
     AuthModule,
     MailModule,
+    OrganizationModule,
   ],
   controllers: [AppController],
   providers: [

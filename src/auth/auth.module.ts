@@ -22,7 +22,7 @@ import { MailModule } from 'src/mail/mail.module';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: '60s',
+          expiresIn: '15M',
         },
       }),
     }),

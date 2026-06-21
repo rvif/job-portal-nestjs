@@ -1,5 +1,7 @@
 import { Otp } from 'src/auth/entities/email-verification-otp.entity';
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { OrganizationMember } from 'src/organization/entities/organization-members.entity';
+
 import {
   Column,
   CreateDateColumn,
@@ -67,6 +69,9 @@ export class User {
 
   @Column({ nullable: true })
   location?: string;
+
+  @OneToMany(() => OrganizationMember, (membership) => membership.user)
+  organizationMemberships?: OrganizationMember[];
 
   @CreateDateColumn()
   createdAt!: Date;

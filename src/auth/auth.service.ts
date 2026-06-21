@@ -38,7 +38,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const user = await this.usersService.findOneByEmail(email);
-    console.log(user);
+    // console.log(user);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -66,7 +66,7 @@ export class AuthService {
   }
 
   async signup(signUpDto: SignUpDto) {
-    console.log(signUpDto);
+    // console.log(signUpDto);
     const { email, password, ...userData } = signUpDto;
     const emailInUse = await this.usersService.findOneByEmail(email);
     if (emailInUse) {
