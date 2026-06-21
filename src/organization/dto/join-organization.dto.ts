@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, Length, max } from 'class-validator';
 export class JoinOrgDto {
   @IsString()
   @IsNotEmpty()
-  id!: string;
+  orgId!: string;
 
   @IsString()
   @IsNotEmpty()

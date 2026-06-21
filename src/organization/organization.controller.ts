@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Req,
@@ -31,12 +33,12 @@ export class OrganizationController {
 
   @Get('my-organizations')
   async getOrg(@Req() req) {
-    return this.organizationService.findAllOrgs(req.user.id); /// user can be in multiple orgs
+    return this.organizationService.findAllOrgsByUserId(req.user.id); /// user can be in multiple orgs
   }
 
   @Public()
   @Get(':id')
-  async findOne(@Param('id') orgId: string) {
+  async findOne(@Param('id', ParseUUIDPipe) orgId: string) {
     return this.organizationService.findOne(orgId);
   }
 
@@ -49,10 +51,66 @@ export class OrganizationController {
   @UseGuards(OrganizationRoleGuard)
   @OrgRole(OrganizationRole.ADMIN)
   async updateOrg(
-    @Param('orgId') orgId: string,
+    @Param('orgId', ParseUUIDPipe) orgId: string,
     @Body() updateOrgDto: UpdateOrgDto,
     @Req() req,
   ) {
     return this.organizationService.updateOrg(updateOrgDto, orgId, req.user.id);
+  }
+
+  @Patch(':orgId/regenerate-invite-code')
+  @UseGuards(OrganizationRoleGuard)
+  @OrgRole(OrganizationRole.ADMIN)
+  async regenerateInviteCode(@Param('orgId', ParseUUIDPipe) orgId: string) {
+    return this.organizationService.regenerateInviteCode(orgId);
+  }
+
+  @Public()
+  @Get(':orgId/members')
+  async getAllOrgMembers(@Param('orgId', ParseUUIDPipe) orgId: string) {
+    return this.organizationService.getAllOrgMembers(orgId);
+  }
+
+  @Patch(':orgId/members/:userId/promote')
+  @UseGuards(OrganizationRoleGuard)
+  @OrgRole(OrganizationRole.ADMIN)
+  async promote(
+    @Param('orgId', ParseUUIDPipe) orgId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ) {
+    return this.organizationService.promote(orgId, userId);
+  }
+
+  @Patch(':orgId/members/:userId/demote')
+  @UseGuards(OrganizationRoleGuard)
+  @OrgRole(OrganizationRole.ADMIN)
+  async demote(
+    @Param('orgId', ParseUUIDPipe) orgId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ) {
+    return this.organizationService.demote(orgId, userId);
+  }
+
+  @Delete(':orgId/members/:userId')
+  @UseGuards(OrganizationRoleGuard)
+  @OrgRole(OrganizationRole.ADMIN)
+  async removeMember(
+    @Param('orgId', ParseUUIDPipe) orgId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Req() req,
+  ) {
+    return this.organizationService.removeMember(orgId, userId, req.user.id);
+  }
+
+  @Delete(':orgId/leave')
+  async leaveOrg(@Param('orgId', ParseUUIDPipe) orgId: string, @Req() req) {
+    return this.organizationService.leaveOrg(orgId, req.user.id);
+  }
+
+  @Delete(':orgId')
+  @UseGuards(OrganizationRoleGuard)
+  @OrgRole(OrganizationRole.ADMIN)
+  async deleteOrg(@Param('orgId', ParseUUIDPipe) orgId: string) {
+    return this.organizationService.deleteOrg(orgId);
   }
 }
