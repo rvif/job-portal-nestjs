@@ -39,7 +39,7 @@ export class OrganizationController {
   @Public()
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) orgId: string) {
-    return this.organizationService.findOne(orgId);
+    return this.organizationService.findOneOrgWithCount(orgId);
   }
 
   @Post('join')

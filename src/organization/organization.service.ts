@@ -95,7 +95,7 @@ export class OrganizationService {
     };
   }
 
-  async findOne(orgId: string) {
+  async findOneOrgWithCount(orgId: string) {
     const orgEntry = await this.findOneOrg(orgId);
 
     const countOfMembersByOrg = await this.organizationMemberRepo.count({
@@ -352,7 +352,7 @@ export class OrganizationService {
     };
   }
 
-  private async findOneOrg(orgId: string) {
+  async findOneOrg(orgId: string) {
     const orgEntry = await this.organizationRepo.findOne({
       where: {
         id: orgId,
@@ -366,7 +366,7 @@ export class OrganizationService {
     return orgEntry;
   }
 
-  private async findOneOrgMember(orgId: string, userId: string) {
+  async findOneOrgMember(orgId: string, userId: string) {
     const exists = await this.organizationRepo.exists({ where: { id: orgId } });
     if (!exists) {
       throw new NotFoundException("Organization with id doesn't exist");

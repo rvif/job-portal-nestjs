@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { OrganizationMember } from './organization-members.entity';
+import { Job } from 'src/jobs/entities/job.entity';
 
 @Entity('organizations')
 export class Organization {
@@ -33,6 +34,9 @@ export class Organization {
 
   @Column({ unique: true, select: false })
   joinCode!: string;
+
+  @OneToMany(() => Job, (job) => job.organization)
+  jobs?: Job[];
 
   @CreateDateColumn()
   createdAt!: Date;

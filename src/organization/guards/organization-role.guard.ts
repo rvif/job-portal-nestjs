@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
@@ -14,6 +15,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ORG_ROLE_KEY } from '../decorators/organization-role.decorator';
 import { Organization } from '../entities/organization.entity';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class OrganizationRoleGuard implements CanActivate {
@@ -28,12 +30,11 @@ export class OrganizationRoleGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext) {
-    const requiredOrgRole = this.reflector.getAllAndOverride<OrganizationRole>(
-      ORG_ROLE_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const requiredOrgRoles = this.reflector.getAllAndOverride<
+      OrganizationRole[]
+    >(ORG_ROLE_KEY, [context.getHandler(), context.getClass()]);
 
-    if (!requiredOrgRole) {
+    if (!requiredOrgRoles) {
       // if metadata not attached let request pass
       return true;
     }
@@ -41,6 +42,9 @@ export class OrganizationRoleGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const orgId = req.params.orgId;
 
+    if (!isUUID(orgId)) {
+      throw new BadRequestException('Invalid organization id');
+    }
     // check org and org-member existence in guard
     const orgEntry = await this.organizationRepo.findOne({
       where: {
@@ -67,10 +71,8 @@ export class OrganizationRoleGuard implements CanActivate {
       throw new ForbiddenException("You don't belong to that organization");
     }
 
-    if (requiredOrgRole !== orgMemberEntry.role) {
-      // change this later to check what was the required role, rn we are assuming it was admin
-      // throw new ForbiddenException('Admin access required');
-      throw new ForbiddenException(`Requires ${requiredOrgRole} role`);
+    if (!requiredOrgRoles.includes(orgMemberEntry.role)) {
+      throw new ForbiddenException('Insufficient organization permissions');
     }
 
     return true;
