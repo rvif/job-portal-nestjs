@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsString,
   MaxLength,
+  Min,
 } from 'class-validator';
 import { EmploymentType, ExperienceLevel } from '../entities/job.entity';
 
@@ -38,9 +39,11 @@ export class CreateJobDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(0, { message: 'this field cannot be negative' })
   salaryMin!: number;
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(0, { message: 'this field cannot be negative' })
   salaryMax!: number;
 }

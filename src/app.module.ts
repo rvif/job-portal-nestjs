@@ -18,6 +18,8 @@ import { Organization } from './organization/entities/organization.entity';
 import { OrganizationMember } from './organization/entities/organization-members.entity';
 import { JobsModule } from './jobs/jobs.module';
 import { Job } from './jobs/entities/job.entity';
+import { ApplicationsModule } from './applications/applications.module';
+import { Application } from './applications/entities/application.entity';
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { Job } from './jobs/entities/job.entity';
           Organization,
           OrganizationMember,
           Job,
+          Application,
         ],
         synchronize: true, // set false for production, and do manual migrations
       }),
@@ -49,6 +52,7 @@ import { Job } from './jobs/entities/job.entity';
     MailModule,
     OrganizationModule,
     JobsModule,
+    ApplicationsModule,
   ],
   controllers: [AppController],
   providers: [

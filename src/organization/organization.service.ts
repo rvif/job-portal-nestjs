@@ -367,10 +367,8 @@ export class OrganizationService {
   }
 
   async findOneOrgMember(orgId: string, userId: string) {
-    const exists = await this.organizationRepo.exists({ where: { id: orgId } });
-    if (!exists) {
-      throw new NotFoundException("Organization with id doesn't exist");
-    }
+    // check if org exists
+    await this.findOneOrg(orgId);
 
     const orgMemberEntry = await this.organizationMemberRepo.findOne({
       where: {

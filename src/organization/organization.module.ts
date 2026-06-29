@@ -10,6 +10,6 @@ import { OrganizationRoleGuard } from './guards/organization-role.guard';
   imports: [TypeOrmModule.forFeature([Organization, OrganizationMember])],
   providers: [OrganizationService, OrganizationRoleGuard],
   controllers: [OrganizationController],
-  exports: [OrganizationService, OrganizationRoleGuard],
+  exports: [OrganizationService, OrganizationRoleGuard, TypeOrmModule],
 })
 export class OrganizationModule {}

@@ -14,5 +14,6 @@ import { OrganizationMember } from 'src/organization/entities/organization-membe
   ],
   providers: [JobsService],
   controllers: [JobsController, OrganizationJobController],
+  exports: [JobsService],
 })
 export class JobsModule {}

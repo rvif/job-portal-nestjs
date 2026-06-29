@@ -72,14 +72,7 @@ export class JobsService {
     }
 
     // continue with update
-    const updatedJobEntry = await this.jobsRepo.preload({
-      id: jobId,
-      ...updateJobDto,
-    });
-
-    if (!updatedJobEntry) {
-      throw new NotFoundException('Job not found');
-    }
+    const updatedJobEntry = this.jobsRepo.merge(jobEntry, updateJobDto);
 
     await this.jobsRepo.save(updatedJobEntry);
     return {
@@ -140,6 +133,8 @@ export class JobsService {
 
   // public get job methods
   async getAllJobs(query: QueryJobDto) {
+    const { sortBy, sortOrder, page, limit } = query;
+    const offset = (page - 1) * limit;
     const qb = this.jobsRepo
       .createQueryBuilder('job')
       .where('job.isActive = true');
@@ -148,6 +143,19 @@ export class JobsService {
       qb.andWhere('LOWER(job.title) LIKE LOWER(:title)', {
         title: `%${query.title}%`,
       });
+    }
+
+    if (query.search) {
+      qb.andWhere(
+        `(
+        LOWER(job.title) LIKE LOWER(:search) 
+        OR 
+        LOWER(job.description) LIKE LOWER(:search)
+        )`,
+        {
+          search: `%${query.search}%`,
+        },
+      );
     }
 
     if (query.location) {
@@ -188,19 +196,37 @@ export class JobsService {
       });
     }
 
-    const [jobs, count] = await qb.getManyAndCount();
+    if (query.organizationId) {
+      qb.andWhere('job.organizationId = :organizationId', {
+        organizationId: query.organizationId,
+      });
+    }
+
+    const [jobs, count] = await qb
+      .orderBy(`job.${sortBy}`, sortOrder)
+      .skip(offset)
+      .take(limit)
+      .getManyAndCount();
 
     return {
       count,
+      page,
+      limit,
+      totalPages: Math.ceil(count / limit),
       jobs,
+      sortBy,
+      sortOrder,
     };
   }
 
-  async getJobById(jobId: string) {
+  async getJobById(jobId: string, selectisActive: boolean = false) {
+    const selectClause = selectisActive ? { isActive: true } : undefined;
+
     const jobEntry = await this.jobsRepo.findOne({
       where: {
         id: jobId,
       },
+      select: selectClause,
     });
 
     if (!jobEntry) {
