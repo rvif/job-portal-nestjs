@@ -16,7 +16,6 @@ export type UpdateUserInput = Partial<{
   emailVerified: boolean;
   role: UserRole;
   avatarUrl: string;
-  resumeUrl: string;
   bio: string;
   phoneNumber: string;
   location: string;

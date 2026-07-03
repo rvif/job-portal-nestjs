@@ -17,6 +17,24 @@ export enum ApplicationStatus {
   HIRED = 'hired',
 }
 
+export const VALID_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> =
+  {
+    [ApplicationStatus.APPLIED]: [
+      ApplicationStatus.REVIEWING,
+      ApplicationStatus.SHORTLISTED,
+    ],
+    [ApplicationStatus.REVIEWING]: [
+      ApplicationStatus.SHORTLISTED,
+      ApplicationStatus.REJECTED,
+    ],
+    [ApplicationStatus.SHORTLISTED]: [
+      ApplicationStatus.HIRED,
+      ApplicationStatus.REJECTED,
+    ],
+    [ApplicationStatus.REJECTED]: [],
+    [ApplicationStatus.HIRED]: [],
+  };
+
 @Entity('applications')
 export class Application {
   @PrimaryGeneratedColumn('uuid')
@@ -33,6 +51,9 @@ export class Application {
     default: ApplicationStatus.APPLIED,
   })
   status!: ApplicationStatus;
+
+  @Column('varchar', { nullable: false })
+  resumePublicId!: string;
 
   @CreateDateColumn()
   createdAt!: Date;

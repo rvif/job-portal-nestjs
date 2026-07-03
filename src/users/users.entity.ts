@@ -56,9 +56,6 @@ export class User {
   avatarUrl?: string;
 
   @Column('text', { nullable: true })
-  resumeUrl?: string;
-
-  @Column('text', { nullable: true })
   bio?: string;
 
   @Column({ length: 20, nullable: true })

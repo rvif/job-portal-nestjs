@@ -1,7 +1,8 @@
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 import { ApplicationStatus } from '../entities/application.entity';
 
 export class RecruiterUpdateApplicationDto {
   @IsEnum(ApplicationStatus)
-  status?: ApplicationStatus;
+  @IsNotEmpty()
+  status!: ApplicationStatus;
 }

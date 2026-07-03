@@ -1,15 +1,18 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Application } from './entities/application.entity';
+import { Application, VALID_TRANSITIONS } from './entities/application.entity';
 import { Repository } from 'typeorm';
 import { JobsService } from 'src/jobs/jobs.service';
 import { OrganizationService } from 'src/organization/organization.service';
 import { RecruiterUpdateApplicationDto } from './dto/recruiter-update-application.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class ApplicationsService {
@@ -18,9 +21,11 @@ export class ApplicationsService {
     private readonly applicationRepo: Repository<Application>,
     private readonly jobsService: JobsService,
     private readonly orgService: OrganizationService,
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly mailService: MailService,
   ) {}
 
-  async create(jobId: string, userId: string) {
+  async create(jobId: string, userId: string, file: Express.Multer.File) {
     // find if job exists
     const { job } = await this.jobsService.getJobById(jobId, true);
 
@@ -46,8 +51,12 @@ export class ApplicationsService {
         "You've already applied to this job. Can't re-apply. You can update your application instead.",
       );
     }
+    // try to upload resume
+    const apiResp = await this.cloudinaryService.uploadFile(file);
+    const { public_id, secure_url } = apiResp;
 
     // create application
+
     const application = this.applicationRepo.create({
       applicant: {
         id: userId,
@@ -55,24 +64,53 @@ export class ApplicationsService {
       job: {
         id: jobId,
       },
+      resumePublicId: public_id,
     });
 
     await this.applicationRepo.save(application);
 
     return {
       message: `Applied successfully. Your application Id: ${application.id}`,
+      secure_url,
+      public_id,
     };
   }
 
-  async findAllApplicationsByUserId(userId) {
+  async updateMyApplicationById(
+    appId: string,
+    userId: string,
+    file: Express.Multer.File,
+  ) {
+    // find application, and verify it belongs to current user
+    const { application } = await this.getMyApplicationById(appId, userId);
+    const oldResumePublicId = application.resumePublicId;
+
+    // upload the new resume
+    const apiResp = await this.cloudinaryService.uploadFile(file);
+    const { public_id, secure_url } = apiResp;
+
+    // update db with new resumePublicId
+    const updatedApplicationEntry = this.applicationRepo.merge(application, {
+      resumePublicId: public_id,
+    });
+    await this.applicationRepo.save(updatedApplicationEntry);
+
+    // delete the old resume from cloudinary
+    await this.cloudinaryService.deleteFile(oldResumePublicId);
+
+    return {
+      message: 'Updated your application successfully.',
+      updated_application: updatedApplicationEntry,
+      secure_url,
+    };
+  }
+
+  async findAllApplicationsByUserId(userId: string) {
     const [applicationEntry, count] = await this.applicationRepo.findAndCount({
       where: {
         applicant: {
           id: userId,
         },
-      },
-      relations: {
-        job: true,
       },
     });
 
@@ -84,17 +122,16 @@ export class ApplicationsService {
 
   async getMyApplicationById(appId: string, userId: string) {
     const applicationEntry = await this.applicationRepo.findOne({
-      where: { id: appId },
+      where: {
+        id: appId,
+        applicant: {
+          id: userId,
+        },
+      },
     });
 
     if (!applicationEntry) {
       throw new NotFoundException("Application doesn't exist");
-    }
-
-    if (applicationEntry.applicant.id !== userId) {
-      throw new UnauthorizedException(
-        'Cannot view applications of other candidates',
-      );
     }
 
     return {
@@ -102,42 +139,41 @@ export class ApplicationsService {
     };
   }
 
-  // async updateMyApplicationById(appId: string, userId: string) {
-  //   const applicationEntry = await this.applicationRepo.findOne({
-  //     where: { id: appId },
-  //   });
-
-  //   if (!applicationEntry) {
-  //     throw new NotFoundException("Application doesn't exist");
-  //   }
-
-  //   if (applicationEntry.applicant.id !== userId) {
-  //     throw new UnauthorizedException(
-  //       'Cannot update applications of other candidates',
-  //     );
-  //   }
-
-  //   // finish this when resume is added to UpdateDto
-  // }
-
-  async deleteApplication(appId: string, userId: string) {
+  private async getApplicationById(appId: string) {
+    // load every relations (applicants, orgs, job, etc... this is just a helper function for other methods
     const applicationEntry = await this.applicationRepo.findOne({
-      where: { id: appId },
+      where: {
+        id: appId,
+      },
+      relations: {
+        applicant: true,
+        job: {
+          organization: true, // drill down
+        },
+      },
     });
 
     if (!applicationEntry) {
       throw new NotFoundException("Application doesn't exist");
     }
 
-    if (applicationEntry.applicant.id !== userId) {
-      throw new UnauthorizedException(
-        'Cannot delete applications of other candidates',
-      );
+    return {
+      application: applicationEntry,
+    };
+  }
+
+  async deleteApplication(appId: string, userId: string) {
+    const applicationEntry = await this.applicationRepo.findOne({
+      where: { id: appId, applicant: { id: userId } },
+    });
+
+    if (!applicationEntry) {
+      throw new NotFoundException("Application doesn't exist");
     }
 
-    await this.applicationRepo.delete({
-      id: appId,
-    });
+    await this.cloudinaryService.deleteFile(applicationEntry.resumePublicId);
+
+    await this.applicationRepo.remove(applicationEntry);
 
     return {
       message: `Successfully deleted your Application with id: ${appId}`,
@@ -176,7 +212,6 @@ export class ApplicationsService {
           username: true,
           firstName: true,
           lastName: true,
-          resumeUrl: true,
           email: true,
           phoneNumber: true,
           avatarUrl: true,
@@ -207,21 +242,36 @@ export class ApplicationsService {
     // check if job valid
     await this.jobsService.getJobById(jobId);
 
-    // check if application exists &&
-    // update status
-    const applicationEntry = await this.applicationRepo.preload({
-      id: appId,
-      ...updateApplicationDto,
-    });
+    // check if application exists
+    const { application } = await this.getApplicationById(appId);
 
-    if (!applicationEntry) {
-      throw new NotFoundException("Application doesn't exist");
+    // check if transistion is valid
+    const current = application.status;
+    const next = updateApplicationDto.status;
+
+    if (!VALID_TRANSITIONS[current].includes(next)) {
+      throw new BadRequestException(
+        `Can't move application from ${current} to ${next}`,
+      );
     }
 
-    await this.applicationRepo.save(applicationEntry);
+    // update status
+    const updatedApplicationEntry = this.applicationRepo.merge(application, {
+      status: next,
+    });
+    await this.applicationRepo.save(updatedApplicationEntry);
+
+    // send a mail notifying the candidate on their application status change
+    const { applicant, job, ...updatedApplication } = updatedApplicationEntry;
+    const candidateEmailAddr = applicant.email;
+    await this.mailService.sendEmail(
+      candidateEmailAddr,
+      'Job Application Status Changed',
+      `Hello ${applicant.firstName}, We'd like to inform you that your application's status for the Organization: ${job.organization.name} & Job title: ${job.title} has now changed to "${next.toUpperCase()}"`,
+    ); //!TODO add bullmq to asynchornously send mails using queues
 
     return {
-      updated: applicationEntry,
+      updated: updatedApplication,
     };
   }
 }

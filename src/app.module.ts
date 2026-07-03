@@ -20,6 +20,8 @@ import { JobsModule } from './jobs/jobs.module';
 import { Job } from './jobs/entities/job.entity';
 import { ApplicationsModule } from './applications/applications.module';
 import { Application } from './applications/entities/application.entity';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -53,6 +55,29 @@ import { Application } from './applications/entities/application.entity';
     OrganizationModule,
     JobsModule,
     ApplicationsModule,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          // 1 sec
+          name: 'short',
+          ttl: 1000,
+          limit: 3,
+        },
+        {
+          // 10 secs
+          name: 'medium',
+          ttl: 10000,
+          limit: 20,
+        },
+        {
+          // 60 secs
+          name: 'short',
+          ttl: 60000,
+          limit: 100,
+        },
+      ],
+    }),
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [
@@ -64,6 +89,10 @@ import { Application } from './applications/entities/application.entity';
     {
       provide: APP_GUARD,
       useClass: RoleGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerModule,
     },
   ],
 })

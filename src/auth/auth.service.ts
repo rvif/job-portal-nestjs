@@ -217,7 +217,7 @@ export class AuthService {
     await this.mailService.sendEmail(
       email,
       'Verify your email',
-      `Hello, from Team Rozgaar\nYour otp: ${otp}`,
+      `Hello, from Team Rozgaar\nYour One Time Password (OTP): ${otp}\n Expires in 10 minutes from now.`,
     );
   }
 
@@ -225,7 +225,7 @@ export class AuthService {
     await this.mailService.sendEmail(
       email,
       'Reset your password',
-      `Hello, from Team Rozgaar\nYour otp: ${otp}`,
+      `Hello, from Team Rozgaar\nYour One Time Password (OTP): ${otp}\n Expires in 10 minutes from now.}`,
     );
   }
 
