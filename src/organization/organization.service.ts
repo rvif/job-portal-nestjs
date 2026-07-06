@@ -145,7 +145,7 @@ export class OrganizationService {
       website,
       membersCount: countOfMemberInOrg,
       activeJobs: countOfActiveJobs,
-      verifed: isVerified,
+      verified: isVerified,
       createdAt,
     };
   }

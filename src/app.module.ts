@@ -20,7 +20,7 @@ import { JobsModule } from './jobs/jobs.module';
 import { Job } from './jobs/entities/job.entity';
 import { ApplicationsModule } from './applications/applications.module';
 import { Application } from './applications/entities/application.entity';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { OrganizationVerificationRequest } from './organization/entities/organization-verification-requests.entity';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -98,7 +98,7 @@ import { OrganizationReport } from './organization/entities/organization-reports
     },
     {
       provide: APP_GUARD,
-      useClass: ThrottlerModule,
+      useClass: ThrottlerGuard,
     },
   ],
 })

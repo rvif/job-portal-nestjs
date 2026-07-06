@@ -176,10 +176,8 @@ export class DashboardService {
           rejected: rejectedCount,
         },
       },
-      latestJobs: { ...allJobs },
-      latestApplications: {
-        ...allApplications.applications,
-      },
+      latestJobs: allJobs.slice(0, 10),
+      latestApplications: allApplications.applications.slice(0, 10),
     };
 
     this.cacheManager.set(cacheKey, dashboard, 5 * 60 * 1000); // 5 minute ttl specified separately, this will override ttl defined during registration.
