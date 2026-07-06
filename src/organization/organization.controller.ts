@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -20,6 +21,12 @@ import { UpdateOrgDto } from './dto/update-organization.dto';
 import { OrgRole } from './decorators/organization-role.decorator';
 import { OrganizationRole } from './entities/organization-members.entity';
 import { OrganizationRoleGuard } from './guards/organization-role.guard';
+import { VerifyOrganizationRequestDto } from './dto/verify-organization-request.dto';
+import { DeveloperGuard } from 'src/common/guards/developer.guard';
+import { VerifyOrganizationDto } from './dto/verify-organization.dto';
+import { RoleGuard } from 'src/auth/guards/role.guard';
+import { CreateReportDto } from './dto/create-report.dto';
+import { QueryOrgJobDto } from './dto/query-org-job.dto';
 
 @Controller('organization')
 export class OrganizationController {
@@ -37,9 +44,18 @@ export class OrganizationController {
   }
 
   @Public()
-  @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) orgId: string) {
-    return this.organizationService.findOneOrgWithCount(orgId);
+  @Get(':orgId')
+  async findOne(@Param('orgId', ParseUUIDPipe) orgId: string) {
+    return this.organizationService.findOneOrgPublic(orgId);
+  }
+
+  @Public()
+  @Get(':orgId/jobs')
+  async findAllJobsByOrg(
+    @Param('orgId', ParseUUIDPipe) orgId: string,
+    @Query() query: QueryOrgJobDto,
+  ) {
+    return this.organizationService.findAllJobsByOrg(orgId, query);
   }
 
   @Post('join')
@@ -112,5 +128,40 @@ export class OrganizationController {
   @OrgRole(OrganizationRole.ADMIN)
   async deleteOrg(@Param('orgId', ParseUUIDPipe) orgId: string) {
     return this.organizationService.deleteOrg(orgId);
+  }
+
+  @Post(':orgId/request-verification')
+  @UseGuards(OrganizationRoleGuard)
+  @OrgRole(OrganizationRole.ADMIN)
+  async requestVerifyOrgDomain(
+    @Param('orgId', ParseUUIDPipe) orgId: string,
+    @Body() verifyOrganizationReqDto: VerifyOrganizationRequestDto,
+  ) {
+    return this.organizationService.requestVerifyOrgDomain(
+      orgId,
+      verifyOrganizationReqDto,
+    );
+  }
+
+  @Post('/verify')
+  @Public()
+  @UseGuards(DeveloperGuard)
+  async verifyOrgDomain(@Body() verifyOrganizationDto: VerifyOrganizationDto) {
+    return this.organizationService.verifyOrgDomain(verifyOrganizationDto);
+  }
+
+  @Post(':orgId/report')
+  @UseGuards(RoleGuard)
+  @Role(UserRole.CANDIDATE)
+  async createReport(
+    @Param('orgId', ParseUUIDPipe) orgId: string,
+    @Req() req,
+    @Body() createReportDto: CreateReportDto,
+  ) {
+    return this.organizationService.createReport(
+      orgId,
+      req.user.id,
+      createReportDto,
+    );
   }
 }

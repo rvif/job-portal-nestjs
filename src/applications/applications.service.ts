@@ -3,7 +3,6 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Application, VALID_TRANSITIONS } from './entities/application.entity';
@@ -217,6 +216,44 @@ export class ApplicationsService {
           avatarUrl: true,
           location: true,
         },
+      },
+    });
+
+    return {
+      count,
+      applications: applicationEntry,
+    };
+  }
+
+  async findApplicationsByOrgId(orgId: string) {
+    // check if org exists
+    await this.orgService.findOneOrg(orgId);
+
+    const [applicationEntry, count] = await this.applicationRepo.findAndCount({
+      where: {
+        job: {
+          organization: {
+            id: orgId,
+          },
+        },
+      },
+      relations: {
+        applicant: true,
+      },
+      select: {
+        applicant: {
+          id: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNumber: true,
+          avatarUrl: true,
+          location: true,
+        },
+      },
+      order: {
+        createdAt: 'ASC',
       },
     });
 

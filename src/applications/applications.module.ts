@@ -26,5 +26,7 @@ import { MailModule } from 'src/mail/mail.module';
     ProfileApplicationController,
     OrganizationApplicationsController,
   ],
+
+  exports: [ApplicationsService, TypeOrmModule],
 })
 export class ApplicationsModule {}

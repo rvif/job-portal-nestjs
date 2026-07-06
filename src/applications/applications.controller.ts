@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { Role } from 'src/auth/decorators/role.decorator';
 import { RoleGuard } from 'src/auth/guards/role.guard';
-import { User, UserRole } from 'src/users/users.entity';
+import { UserRole } from 'src/users/users.entity';
 import { ApplicationsService } from './applications.service';
 import { OrganizationRoleGuard } from 'src/organization/guards/organization-role.guard';
 import { OrganizationRole } from 'src/organization/entities/organization-members.entity';

@@ -22,6 +22,9 @@ import { ApplicationsModule } from './applications/applications.module';
 import { Application } from './applications/entities/application.entity';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { OrganizationVerificationRequest } from './organization/entities/organization-verification-requests.entity';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { OrganizationReport } from './organization/entities/organization-reports.entity';
 
 @Module({
   imports: [
@@ -46,6 +49,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
           OrganizationMember,
           Job,
           Application,
+          OrganizationVerificationRequest,
+          OrganizationReport,
         ],
         synchronize: true, // set false for production, and do manual migrations
       }),
@@ -55,6 +60,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     OrganizationModule,
     JobsModule,
     ApplicationsModule,
+    CloudinaryModule,
+    DashboardModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -71,13 +78,12 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
         },
         {
           // 60 secs
-          name: 'short',
+          name: 'long',
           ttl: 60000,
           limit: 100,
         },
       ],
     }),
-    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [

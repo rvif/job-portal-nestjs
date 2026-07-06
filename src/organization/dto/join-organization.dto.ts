@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString, Length, max } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
 
 export class JoinOrgDto {
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   orgId!: string;
 

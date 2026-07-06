@@ -4,24 +4,12 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
 } from 'class-validator';
-import { EmploymentType, ExperienceLevel } from '../entities/job.entity';
+import { EmploymentType, ExperienceLevel } from 'src/jobs/entities/job.entity';
 import { Transform, Type } from 'class-transformer';
+import { JobSortField, SortOrder } from 'src/jobs/dto/query-job.dto';
 
-export enum JobSortField {
-  CREATED_AT = 'createdAt',
-  SALARY_MAX = 'salaryMax',
-  SALARY_MIN = 'salaryMin',
-  TITLE = 'title',
-  LOCATION = 'location',
-}
-
-export enum SortOrder {
-  ASC = 'ASC',
-  DESC = 'DESC',
-}
-export class QueryJobDto {
+export class QueryOrgJobDto {
   @IsOptional()
   @IsString()
   title?: string;
@@ -70,10 +58,6 @@ export class QueryJobDto {
   @IsOptional()
   @IsEnum(SortOrder)
   sortOrder: SortOrder = SortOrder.DESC;
-
-  @IsOptional()
-  @IsUUID()
-  organizationId?: string;
 
   @IsOptional()
   @IsString()

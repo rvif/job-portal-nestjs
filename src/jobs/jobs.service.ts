@@ -19,7 +19,6 @@ export class JobsService {
   constructor(
     @InjectRepository(Job)
     private readonly jobsRepo: Repository<Job>,
-
     private readonly orgService: OrganizationService,
   ) {}
 
@@ -246,16 +245,11 @@ export class JobsService {
           id: orgId,
         },
       },
-      relations: {
-        organization: true,
+
+      order: {
+        createdAt: 'ASC',
       },
     });
-
-    if (!count) {
-      throw new NotFoundException(
-        'Organization has no available jobs at the moment.',
-      );
-    }
 
     return {
       count,

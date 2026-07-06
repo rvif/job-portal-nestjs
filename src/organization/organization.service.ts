@@ -15,6 +15,17 @@ import {
 } from './entities/organization-members.entity';
 import { JoinOrgDto } from './dto/join-organization.dto';
 import { UpdateOrgDto } from './dto/update-organization.dto';
+import { VerifyOrganizationDto } from './dto/verify-organization.dto';
+import {
+  OrganizationVerificationRequest,
+  VerificationStatus,
+} from './entities/organization-verification-requests.entity';
+import { VerifyOrganizationRequestDto } from './dto/verify-organization-request.dto';
+import { CreateReportDto } from './dto/create-report.dto';
+import { OrganizationReport } from './entities/organization-reports.entity';
+import { MailService } from 'src/mail/mail.service';
+import { Job } from 'src/jobs/entities/job.entity';
+import { QueryOrgJobDto } from './dto/query-org-job.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -24,6 +35,17 @@ export class OrganizationService {
 
     @InjectRepository(OrganizationMember)
     private readonly organizationMemberRepo: Repository<OrganizationMember>,
+
+    @InjectRepository(OrganizationVerificationRequest)
+    private readonly organizationVerificationReqRepo: Repository<OrganizationVerificationRequest>,
+
+    @InjectRepository(OrganizationReport)
+    private readonly organizationReportRepo: Repository<OrganizationReport>,
+
+    @InjectRepository(Job)
+    private readonly jobsRepo: Repository<Job>,
+
+    private readonly mailService: MailService,
   ) {}
 
   async create(createOrgDto: CreateOrgDto, userId) {
@@ -95,10 +117,10 @@ export class OrganizationService {
     };
   }
 
-  async findOneOrgWithCount(orgId: string) {
+  async findOneOrgPublic(orgId: string) {
     const orgEntry = await this.findOneOrg(orgId);
 
-    const countOfMembersByOrg = await this.organizationMemberRepo.count({
+    const countOfMemberInOrg = await this.organizationMemberRepo.count({
       where: {
         organization: {
           id: orgId,
@@ -106,9 +128,107 @@ export class OrganizationService {
       },
     });
 
+    const countOfActiveJobs = await this.jobsRepo.count({
+      where: {
+        organization: {
+          id: orgId,
+        },
+        isActive: true,
+      },
+    });
+
+    const { id, logoUrl, website, createdAt, isVerified } = orgEntry;
+
     return {
-      orgEntry,
-      membersCount: countOfMembersByOrg,
+      id,
+      logo: logoUrl,
+      website,
+      membersCount: countOfMemberInOrg,
+      activeJobs: countOfActiveJobs,
+      verifed: isVerified,
+      createdAt,
+    };
+  }
+
+  async findAllJobsByOrg(orgId: string, query: QueryOrgJobDto) {
+    const { sortBy, sortOrder, page, limit } = query;
+    const offset = (page - 1) * limit;
+    const qb = this.jobsRepo
+      .createQueryBuilder('job')
+      .where('job.organizationId = :orgId', { orgId })
+      .andWhere('job.isActive = true');
+
+    if (query.title) {
+      qb.andWhere('LOWER(job.title) LIKE LOWER(:title)', {
+        title: `%${query.title}%`,
+      });
+    }
+
+    if (query.search) {
+      qb.andWhere(
+        `(
+        LOWER(job.title) LIKE LOWER(:search) 
+        OR 
+        LOWER(job.description) LIKE LOWER(:search)
+        )`,
+        {
+          search: `%${query.search}%`,
+        },
+      );
+    }
+
+    if (query.location) {
+      qb.andWhere('LOWER(job.location) = LOWER(:location)', {
+        location: query.location,
+      });
+    }
+
+    if (query.salaryMin !== undefined) {
+      // if (query.salaryMin) {} if query.salaryMin is zero, this if block wont work so check if its not undefined instead
+      qb.andWhere('job.salaryMin >= :salaryMin', {
+        salaryMin: query.salaryMin,
+      });
+    }
+
+    if (query.salaryMax !== undefined) {
+      qb.andWhere('job.salaryMax <= :salaryMax', {
+        salaryMax: query.salaryMax,
+      });
+    }
+
+    if (query.isRemote !== undefined) {
+      // if(query.isRemote) {} if query.isRemote is false, this if block wont work so check if its not undefined instead
+      qb.andWhere('job.isRemote = :isRemote', {
+        isRemote: query.isRemote,
+      });
+    }
+
+    if (query.employmentType) {
+      qb.andWhere('job.employmentType = :employmentType', {
+        employmentType: query.employmentType,
+      });
+    }
+
+    if (query.experienceLevel) {
+      qb.andWhere('job.experienceLevel = :experienceLevel', {
+        experienceLevel: query.experienceLevel,
+      });
+    }
+
+    const [jobs, count] = await qb
+      .orderBy(`job.${sortBy}`, sortOrder)
+      .skip(offset)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      count,
+      page,
+      limit,
+      totalPages: Math.ceil(count / limit),
+      jobs,
+      sortBy,
+      sortOrder,
     };
   }
 
@@ -349,6 +469,184 @@ export class OrganizationService {
 
     return {
       message: `Deleted ${orgEntry.name} and also deleted ${orgMemberDeleteMetadata.affected} members associated with the organization successfully`,
+    };
+  }
+
+  async requestVerifyOrgDomain(
+    orgId: string,
+    verifyOrganizationReqDto: VerifyOrganizationRequestDto,
+  ) {
+    const { domain } = verifyOrganizationReqDto;
+    const orgEntry = await this.findOneOrg(orgId);
+    const orgVerifyReqEntry =
+      await this.organizationVerificationReqRepo.findOne({
+        where: {
+          organization: {
+            id: orgId,
+          },
+        },
+      });
+
+    if (
+      orgVerifyReqEntry &&
+      orgVerifyReqEntry.status === VerificationStatus.PENDING
+    ) {
+      throw new ConflictException(
+        'Verification for your organization is already queued. Cannot apply more than once.',
+      );
+    }
+
+    if (
+      orgVerifyReqEntry &&
+      orgVerifyReqEntry.status === VerificationStatus.REJECTED
+    ) {
+      throw new ConflictException(
+        'Verification request for your organization was rejected. Please request again sometime later.',
+      );
+    }
+
+    if (orgEntry.isVerified) {
+      throw new ConflictException('Organization is already verified.');
+    }
+
+    const entry = this.organizationVerificationReqRepo.create({
+      organization: {
+        id: orgId,
+      },
+      domain,
+      status: VerificationStatus.PENDING,
+    });
+
+    await this.organizationVerificationReqRepo.save(entry);
+    return {
+      message:
+        'Verification requested, Please be patient until we process your request.',
+    };
+  }
+
+  async verifyOrgDomain(verifyOrganizationDto: VerifyOrganizationDto) {
+    // manual review and call this service to set verifiedDomain and isVerified fields
+    const { reqId, status } = verifyOrganizationDto;
+    const requestEntry = await this.organizationVerificationReqRepo.findOne({
+      where: {
+        id: reqId,
+      },
+      relations: {
+        organization: true,
+      },
+      select: {
+        organization: {
+          id: true,
+        },
+      },
+    });
+
+    if (!requestEntry) {
+      throw new NotFoundException(
+        "Verification request with id doesn't exists",
+      );
+    }
+
+    const orgEntry = await this.findOneOrg(requestEntry.organization.id);
+    if (orgEntry.isVerified) {
+      throw new ConflictException('Organization already verified.');
+    }
+
+    if (status === VerificationStatus.VERIFIED) {
+      const updatedOrgEntry = this.organizationRepo.merge(orgEntry, {
+        verifiedDomain: requestEntry.domain,
+        isVerified: true,
+        verifiedAt: new Date(),
+      });
+
+      // if verified, delete the request
+      await this.organizationVerificationReqRepo.delete({
+        id: reqId,
+      });
+
+      await this.organizationRepo.save(updatedOrgEntry);
+      const { id, verifiedDomain, isVerified, verifiedAt } = updatedOrgEntry;
+      return {
+        message: 'Organization was verified, and request was deleted.',
+        updated: {
+          id,
+          verifiedDomain,
+          isVerified,
+          verifiedAt,
+        },
+      };
+    }
+
+    requestEntry.status = status;
+    await this.organizationVerificationReqRepo.save(requestEntry);
+    if (status === VerificationStatus.REJECTED) {
+      return {
+        message: `Verification request for orgId:${requestEntry.organization.id} was rejected.`,
+        request: requestEntry,
+      };
+    }
+
+    return {
+      request: requestEntry,
+    };
+  }
+
+  async createReport(
+    orgId: string,
+    userId: string,
+    createReportDto: CreateReportDto,
+  ) {
+    //    organization exists
+    await this.findOneOrg(orgId);
+
+    //    prevent duplicate open reports from same user
+    const orgReportEntryBySameUser = await this.organizationReportRepo.findOne({
+      where: {
+        organization: {
+          id: orgId,
+        },
+        reporter: {
+          id: userId,
+        },
+      },
+    });
+
+    if (orgReportEntryBySameUser) {
+      throw new ConflictException(
+        'You have already reported this organization. Please be patient until we try to resolve the issue.',
+      );
+    }
+
+    //    save report
+    const orgReportEntry = this.organizationReportRepo.create({
+      organization: {
+        id: orgId,
+      },
+      reporter: {
+        id: userId,
+      },
+      ...createReportDto,
+    });
+
+    await this.organizationReportRepo.save(orgReportEntry);
+
+    //    send email to admins
+    const orgAdminEntries = await this.organizationMemberRepo
+      .createQueryBuilder('member')
+      .innerJoin('member.user', 'user')
+      .where('member.organizationId = :orgId', { orgId })
+      .andWhere('member.role = :role', { role: OrganizationRole.ADMIN })
+      .select('user.email', 'email')
+      .getRawMany<{ email: string }>();
+
+    const adminEmailAddrs = orgAdminEntries.map((row) => row.email);
+    await this.mailService.sendEmail(
+      adminEmailAddrs.join(', '),
+      'New Organization Report Received',
+      `We would like to inform you about your recent report from one of our users\n\nReport reason: ${orgReportEntry.reason}. \n\nPlease make sure you don't break any platform guidelines, This report will be manually reviewed soon.`,
+    );
+    return {
+      message: 'Report successfully submitted.',
     };
   }
 
