@@ -26,6 +26,8 @@ import { OrganizationReport } from './entities/organization-reports.entity';
 import { MailService } from 'src/mail/mail.service';
 import { Job } from 'src/jobs/entities/job.entity';
 import { QueryOrgJobDto } from './dto/query-org-job.dto';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class OrganizationService {
@@ -45,7 +47,8 @@ export class OrganizationService {
     @InjectRepository(Job)
     private readonly jobsRepo: Repository<Job>,
 
-    private readonly mailService: MailService,
+    @InjectQueue('email-queue')
+    private readonly emailQueue: Queue,
   ) {}
 
   async create(createOrgDto: CreateOrgDto, userId) {
@@ -640,11 +643,26 @@ export class OrganizationService {
       .getRawMany<{ email: string }>();
 
     const adminEmailAddrs = orgAdminEntries.map((row) => row.email);
-    await this.mailService.sendEmail(
-      adminEmailAddrs.join(', '),
-      'New Organization Report Received',
-      `We would like to inform you about your recent report from one of our users\n\nReport reason: ${orgReportEntry.reason}. \n\nPlease make sure you don't break any platform guidelines, This report will be manually reviewed soon.`,
+    await this.emailQueue.addBulk(
+      adminEmailAddrs.map((email) => ({
+        name: 'send-email',
+        data: {
+          to: email,
+          subject: 'New Organization Report Received',
+          body: `We would like to inform you about your recent report from one of our users\n\nReport reason: ${orgReportEntry.reason}. \n\nPlease make sure you don't break any platform guidelines, This report will be manually reviewed soon.`,
+        },
+        opts: {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 5000,
+          },
+          removeOnComplete: 100,
+          removeOnFail: 50,
+        },
+      })),
     );
+
     return {
       message: 'Report successfully submitted.',
     };

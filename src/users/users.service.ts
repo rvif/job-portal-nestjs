@@ -1,14 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './users.entity';
 import { CreateUserInput, UpdateUserInput } from './user.types';
+import { OnboardingDto } from './dto/onboarding.dto';
+import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    private readonly commonService: CommonService,
   ) {}
 
   async create(data: CreateUserInput) {
@@ -38,7 +45,7 @@ export class UsersService {
     });
 
     if (!user) {
-      return undefined;
+      throw new NotFoundException("User with id doesn't exists");
     }
 
     return user;
@@ -94,5 +101,22 @@ export class UsersService {
     return {
       message: 'User deleted successfully',
     };
+  }
+
+  // currently for oauth users
+  async onboarding(onboardingDto: OnboardingDto, userId: string) {
+    const user = await this.findOne(userId);
+    if (user.onboardingComplete) {
+      throw new ConflictException('Onboarding already completed.');
+    }
+
+    const updatedUserEntry = this.userRepo.merge(user, {
+      ...onboardingDto,
+      onboardingComplete: true,
+    });
+    await this.userRepo.save(updatedUserEntry);
+
+    // issue fresh tokens so jwt payload contains role else it will be null for oauth users
+    return this.commonService.generateAuthTokens(updatedUserEntry);
   }
 }

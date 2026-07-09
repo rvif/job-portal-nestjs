@@ -27,10 +27,12 @@ export class User {
 
   @Column('enum', {
     enum: UserRole,
-    nullable: false,
-    default: UserRole.CANDIDATE,
+    nullable: true,
   })
   role!: UserRole;
+
+  @Column({ default: false })
+  onboardingComplete!: boolean;
 
   @Column('varchar', { length: 50, nullable: true })
   firstName?: string;

@@ -10,7 +10,7 @@ import { Application } from './entities/application.entity';
 import { JobsModule } from 'src/jobs/jobs.module';
 import { OrganizationModule } from 'src/organization/organization.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
-import { MailModule } from 'src/mail/mail.module';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { MailModule } from 'src/mail/mail.module';
     JobsModule,
     OrganizationModule,
     CloudinaryModule,
-    MailModule,
+    CommonModule,
   ],
   providers: [ApplicationsService],
   controllers: [

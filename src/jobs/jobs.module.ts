@@ -6,11 +6,13 @@ import { Job } from './entities/job.entity';
 import { OrganizationModule } from 'src/organization/organization.module';
 import { Organization } from 'src/organization/entities/organization.entity';
 import { OrganizationMember } from 'src/organization/entities/organization-members.entity';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Job, Organization, OrganizationMember]),
     OrganizationModule,
+    CommonModule,
   ],
   providers: [JobsService],
   controllers: [JobsController, OrganizationJobController],

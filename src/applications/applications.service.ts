@@ -11,7 +11,8 @@ import { JobsService } from 'src/jobs/jobs.service';
 import { OrganizationService } from 'src/organization/organization.service';
 import { RecruiterUpdateApplicationDto } from './dto/recruiter-update-application.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { MailService } from 'src/mail/mail.service';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class ApplicationsService {
@@ -21,7 +22,9 @@ export class ApplicationsService {
     private readonly jobsService: JobsService,
     private readonly orgService: OrganizationService,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly mailService: MailService,
+
+    @InjectQueue('email-queue')
+    private readonly emailQueue: Queue,
   ) {}
 
   async create(jobId: string, userId: string, file: Express.Multer.File) {
@@ -301,14 +304,29 @@ export class ApplicationsService {
     // send a mail notifying the candidate on their application status change
     const { applicant, job, ...updatedApplication } = updatedApplicationEntry;
     const candidateEmailAddr = applicant.email;
-    await this.mailService.sendEmail(
-      candidateEmailAddr,
-      'Job Application Status Changed',
-      `Hello ${applicant.firstName}, We'd like to inform you that your application's status for the Organization: ${job.organization.name} & Job title: ${job.title} has now changed to "${next.toUpperCase()}"`,
-    ); //!TODO add bullmq to asynchornously send mails using queues
+
+    await this.emailQueue.add(
+      'send-email',
+      {
+        to: candidateEmailAddr,
+        subject: 'Job Application Status Changed',
+        body: `Hello ${applicant.firstName}, We'd like to inform you that your application's status for the Organization: ${job.organization.name} & Job title: ${job.title} has now changed to "${next.toUpperCase()}`,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 5000,
+        },
+        removeOnComplete: 100,
+        removeOnFail: 50,
+      },
+    );
 
     return {
       updated: updatedApplication,
+      message:
+        'Application status update successful, Email queued successfully',
     };
   }
 }

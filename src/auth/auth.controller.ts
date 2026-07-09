@@ -14,8 +14,6 @@ import { UsersService } from 'src/users/users.service';
 import { Public } from './decorators/public.decorator';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { Role } from './decorators/role.decorator';
-import { UserRole } from 'src/users/users.entity';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ResendVerificationDto } from './dto/reverification.dto';
@@ -23,7 +21,10 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { LogoutDto } from './dto/logout.dto';
+import { GoogleOauthGuard } from './guards/google-auth.guard';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -32,14 +33,36 @@ export class AuthController {
   ) {}
 
   @Public()
-  @UseGuards(LocalAuthGuard)
+  @Get('google')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuth() {}
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(GoogleOauthGuard)
+  @HttpCode(HttpStatus.OK)
+  async googleAuthCallback(@Req() req) {
+    return this.authService.oauthLogin(req.user);
+  }
+
   @Post('login')
+  @UseGuards(LocalAuthGuard)
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login with your account.' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Login successful.' })
   async signin(@Body() _: SignInDto, @Req() req) {
     return this.authService.login(req.user);
   }
 
-  @Public()
   @Post('signup')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Create an account.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Account created successfully.',
+  })
   async signup(@Body() signUpDto: SignUpDto) {
     return this.authService.signup(signUpDto);
   }
@@ -85,8 +108,9 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
   }
-  @HttpCode(HttpStatus.OK)
+
   @Post('change-password')
+  @HttpCode(HttpStatus.OK)
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @Req() req,

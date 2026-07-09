@@ -25,6 +25,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { OrganizationVerificationRequest } from './organization/entities/organization-verification-requests.entity';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { OrganizationReport } from './organization/entities/organization-reports.entity';
+import { CommonModule } from './common/common.module';
+import { BullMqModule } from './bullmq/bullmq.module';
 
 @Module({
   imports: [
@@ -62,6 +64,8 @@ import { OrganizationReport } from './organization/entities/organization-reports
     ApplicationsModule,
     CloudinaryModule,
     DashboardModule,
+    CommonModule,
+    BullMqModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {

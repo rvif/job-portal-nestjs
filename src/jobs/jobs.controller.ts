@@ -19,8 +19,10 @@ import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { QueryJobDto } from './dto/query-job.dto';
+import { OnboardingGuard } from 'src/common/guards/onboarding.guard';
 
 @Controller('/jobs')
+@UseGuards(OnboardingGuard)
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
   @Public()
@@ -43,6 +45,7 @@ export class JobsController {
 }
 
 @Controller('/organization/:orgId/jobs')
+@UseGuards(OnboardingGuard)
 export class OrganizationJobController {
   constructor(private readonly jobsService: JobsService) {}
 

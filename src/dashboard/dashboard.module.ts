@@ -7,12 +7,14 @@ import { JobsModule } from 'src/jobs/jobs.module';
 import { OrganizationModule } from 'src/organization/organization.module';
 import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
     OrganizationModule,
     JobsModule,
     ApplicationsModule,
+    CommonModule,
     CacheModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

@@ -27,8 +27,10 @@ import { VerifyOrganizationDto } from './dto/verify-organization.dto';
 import { RoleGuard } from 'src/auth/guards/role.guard';
 import { CreateReportDto } from './dto/create-report.dto';
 import { QueryOrgJobDto } from './dto/query-org-job.dto';
+import { OnboardingGuard } from 'src/common/guards/onboarding.guard';
 
 @Controller('organization')
+@UseGuards(OnboardingGuard)
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 

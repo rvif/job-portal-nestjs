@@ -9,6 +9,7 @@ import { OrganizationVerificationRequest } from './entities/organization-verific
 import { OrganizationReport } from './entities/organization-reports.entity';
 import { MailModule } from 'src/mail/mail.module';
 import { Job } from 'src/jobs/entities/job.entity';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { Job } from 'src/jobs/entities/job.entity';
       Job,
     ]),
     MailModule,
+    CommonModule,
   ],
   providers: [OrganizationService, OrganizationRoleGuard],
   controllers: [OrganizationController],

@@ -4,8 +4,10 @@ export type CreateUserInput = {
   firstName?: string;
   lastName?: string;
   email: string;
-  hashedPassword: string;
+  hashedPassword?: string;
   role?: UserRole;
+  googleId?: string;
+  emailVerified?: boolean;
 };
 
 export type UpdateUserInput = Partial<{
@@ -20,3 +22,14 @@ export type UpdateUserInput = Partial<{
   phoneNumber: string;
   location: string;
 }>;
+
+export type OauthUser = {
+  provider: string;
+  providerId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  photo: string;
+  accessToken: string;
+  role: UserRole;
+};

@@ -14,8 +14,10 @@ import { DashboardService } from './dashboard.service';
 import { DeveloperGuard } from 'src/common/guards/developer.guard';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { OnboardingGuard } from 'src/common/guards/onboarding.guard';
 
 @Controller('dashboard')
+@UseGuards(OnboardingGuard)
 export class DashboardController {
   constructor(
     private readonly dashboardService: DashboardService,

@@ -8,12 +8,10 @@ import {
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/users.entity';
-import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/sign-up.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { IsNull, Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Otp, OtpType } from './entities/email-verification-otp.entity';
 import { MailService } from 'src/mail/mail.service';
@@ -21,19 +19,30 @@ import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LogoutDto } from './dto/logout.dto';
+import { OauthUser } from 'src/users/user.types';
+import { CommonService } from 'src/common/common.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
     private readonly mailService: MailService,
+    private readonly commonService: CommonService,
 
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepo: Repository<RefreshToken>,
 
     @InjectRepository(Otp)
     private readonly otpRepo: Repository<Otp>,
+
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+
+    @InjectQueue('email-queue')
+    private readonly emailQueue: Queue,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -93,24 +102,35 @@ export class AuthService {
     };
   }
 
-  async login(user: Omit<User, 'hashedPassword'>) {
-    return this.generateAuthTokens(user);
+  async oauthLogin(user: OauthUser) {
+    const { email, firstName, lastName, photo, providerId } = user;
+
+    let userEntry = await this.usersService.findOneByEmail(email);
+    if (userEntry) {
+      if (!userEntry.googleId) {
+        // if user exists but they want to connect their google acc
+        userEntry.googleId = providerId;
+        await this.userRepo.save(userEntry);
+      }
+      return this.commonService.generateAuthTokens(userEntry);
+    }
+
+    const createUserInput = {
+      email,
+      firstName,
+      lastName,
+      avatarUrl: photo,
+      googleId: providerId,
+      emailVerified: true,
+    };
+
+    userEntry = await this.usersService.create(createUserInput);
+    console.log(userEntry);
+    return this.commonService.generateAuthTokens(userEntry);
   }
 
-  private async generateAuthTokens(user: Omit<User, 'hashedPassword'>) {
-    const payload = { sub: user.id, email: user.email, role: user.role };
-    const accessToken = this.jwtService.sign(payload);
-
-    const secret = uuidv4();
-
-    const tokenId = await this.storeRefreshToken(secret, user.id);
-
-    const refreshToken = `${tokenId}.${secret}`;
-
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken, // send plain text to client
-    };
+  async login(user: Omit<User, 'hashedPassword'>) {
+    return this.commonService.generateAuthTokens(user);
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
@@ -156,27 +176,7 @@ export class AuthService {
     refreshTokenEntry.revokedAt = new Date();
     this.refreshTokenRepo.save(refreshTokenEntry);
 
-    return this.generateAuthTokens(refreshTokenEntry.user);
-  }
-
-  private async storeRefreshToken(secret: string, userId: string) {
-    const REFRESH_TOKEN_EXPIRY_DAYS = 7;
-    const expiresAt = new Date(
-      Date.now() + REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000, // multiply by 1000 to convert the entire thing in milliseconds
-    );
-
-    const hashedRefreshToken = await bcrypt.hash(secret, 10);
-    const refreshTokenEntry = this.refreshTokenRepo.create({
-      user: {
-        id: userId,
-      },
-      hashedToken: hashedRefreshToken,
-      expiresAt: expiresAt,
-    });
-
-    await this.refreshTokenRepo.save(refreshTokenEntry);
-
-    return refreshTokenEntry.id;
+    return this.commonService.generateAuthTokens(refreshTokenEntry.user);
   }
 
   private async createOtpEntry(userId: string, otpType: OtpType) {
@@ -214,18 +214,42 @@ export class AuthService {
   }
 
   private async sendVerificationMail(email: string, otp: string) {
-    await this.mailService.sendEmail(
-      email,
-      'Verify your email',
-      `Hello, from Team Rozgaar\nYour One Time Password (OTP): ${otp}\n Expires in 10 minutes from now.`,
+    await this.emailQueue.add(
+      'send-email',
+      {
+        to: email,
+        subject: 'Verify your email',
+        body: `Hello, from Team Rozgaar\nYour One Time Password (OTP): ${otp}\n Expires in 10 minutes from now.`,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 5000,
+        },
+        removeOnComplete: 100,
+        removeOnFail: 50,
+      },
     );
   }
 
   private async sendPasswordResetMail(email: string, otp: string) {
-    await this.mailService.sendEmail(
-      email,
-      'Reset your password',
-      `Hello, from Team Rozgaar\nYour One Time Password (OTP): ${otp}\n Expires in 10 minutes from now.}`,
+    await this.emailQueue.add(
+      'send-email',
+      {
+        to: email,
+        subject: 'Reset your password',
+        body: `Hello, from Team Rozgaar\nYour One Time Password (OTP): ${otp}\n Expires in 10 minutes from now.}`,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 5000,
+        },
+        removeOnComplete: 100,
+        removeOnFail: 50,
+      },
     );
   }
 
@@ -304,13 +328,21 @@ export class AuthService {
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const { email } = forgotPasswordDto;
     const userEntry = await this.usersService.findOneByEmail(email);
-    if (userEntry) {
-      const { otp } = await this.createOtpEntry(
-        userEntry.id,
-        OtpType.PASSWORD_RESET,
-      );
-      await this.sendPasswordResetMail(email, otp);
+    if (!userEntry) {
+      throw new UnauthorizedException("User with email doesn't exist");
     }
+
+    if (!userEntry.hashedPassword) {
+      // oauth user that hasn't linked their account
+      throw new BadRequestException('This account uses Google sign-in');
+    }
+
+    const { otp } = await this.createOtpEntry(
+      userEntry.id,
+      OtpType.PASSWORD_RESET,
+    );
+    await this.sendPasswordResetMail(email, otp);
+
     return {
       message: 'If an account exists, a reset code has been sent',
     };
@@ -321,6 +353,11 @@ export class AuthService {
     const userEntry = await this.usersService.findOneByEmail(email);
     if (!userEntry) {
       throw new UnauthorizedException("User with email doesn't exist");
+    }
+
+    if (!userEntry.hashedPassword) {
+      // oauth user that hasn't linked their account
+      throw new BadRequestException('This account uses Google sign-in');
     }
 
     const otpEntry = await this.otpRepo.findOne({
@@ -379,16 +416,33 @@ export class AuthService {
     );
   }
 
-  async changePassword(changePasswordDto, email) {
+  async changePassword(changePasswordDto: ChangePasswordDto, email: string) {
     const { oldPassword, newPassword } = changePasswordDto;
+
     const userEntry = await this.usersService.findOneByEmail(email);
+
     if (!userEntry) {
       throw new UnauthorizedException('User not found');
     }
+
     if (!userEntry.hashedPassword) {
-      throw new BadRequestException(
-        'Password changes are unavailable for OAuth accounts',
-      );
+      // set first ever password (link account) for the oauth user
+      const newHashedPassword = await bcrypt.hash(newPassword, 10);
+      await this.usersService.update(userEntry.id, {
+        hashedPassword: newHashedPassword,
+      });
+
+      await this.revokeAllRefreshTokens(userEntry.id);
+
+      return {
+        message:
+          'Password created successfully. You can now sign in using either Google or your email and password.',
+      };
+    }
+
+    // verify old password logic, and change to new password
+    if (!oldPassword) {
+      throw new BadRequestException('Please provide your old password aswell.');
     }
 
     const currentPassword = userEntry.hashedPassword;
@@ -397,7 +451,8 @@ export class AuthService {
       throw new UnauthorizedException('Password is incorrect');
     }
 
-    if (oldPassword == newPassword) {
+    const samePassword = await bcrypt.compare(newPassword, currentPassword);
+    if (samePassword) {
       throw new ConflictException(
         "Can't use the same password as new password",
       );

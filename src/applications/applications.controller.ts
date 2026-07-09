@@ -24,8 +24,10 @@ import { OrganizationRole } from 'src/organization/entities/organization-members
 import { OrgRole } from 'src/organization/decorators/organization-role.decorator';
 import { RecruiterUpdateApplicationDto } from './dto/recruiter-update-application.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { OnboardingGuard } from 'src/common/guards/onboarding.guard';
 
 @Controller('/jobs/:jobId/apply')
+@UseGuards(OnboardingGuard)
 export class ApplicationsController {
   constructor(private readonly applicationService: ApplicationsService) {}
   @Post()
@@ -57,6 +59,7 @@ export class ApplicationsController {
 }
 
 @Controller('/applications/me')
+@UseGuards(OnboardingGuard)
 export class ProfileApplicationController {
   constructor(private readonly applicationService: ApplicationsService) {}
 
@@ -120,6 +123,7 @@ export class ProfileApplicationController {
 }
 
 @Controller('/organization/:orgId/jobs/:jobId/applications')
+@UseGuards(OnboardingGuard)
 export class OrganizationApplicationsController {
   constructor(private readonly applicationService: ApplicationsService) {}
   @Get()
