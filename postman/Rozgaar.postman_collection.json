@@ -1,0 +1,2049 @@
+{
+  "info": {
+    "_postman_id": "7fc4542c-4bdb-4f9a-90f8-e320a1b52c2c",
+    "name": "rozgaar-job-portal-api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41722063"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "signup",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{   \r\n    \"firstName\": \"ABC\",\r\n    \"lastName\": \"LALA\",\r\n    \"email\": \"rorana2420@lovadio.com\",\r\n    \"role\": \"recruiter\",\r\n    \"password\": \"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/signup",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    // Both recruiters\r\n\r\n    // org role = member\r\n    // \"email\": \"dummy@recruiter.com\",\r\n    // \"password\": \"12345678\"\r\n\r\n    // org role = ADMIN\r\n    // \"email\": \"xasilic187@ocuser.com\",\r\n    // \"password\": \"12345678\"\r\n\r\n\r\n    // Candidate\r\n    \"email\": \"jokaf29082@fishnone.com\", \r\n    \"password\": \"12345678\"\r\n\r\n    // \"email\": \"jinhamalenkar@gmail.com\",\r\n    // \"password\": \"12345678\"\r\n\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "me",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODIwNDAwNTAsImV4cCI6MTc4MjA0MDExMH0.iZd0GGcVyEShgW3I1fccBK_kZJoC77Q7_RVctXm-R3o",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"recruiter@adobe.com\",\r\n  \"password\": \"securePassword123\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "refresh",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MjE5NzY2OS0wNmJlLTQzMjUtOTk4OS04YTg3MjYzMTRjY2UiLCJlbWFpbCI6ImpvaG5AYWRvYmUuY29tIiwicm9sZSI6InJlY3J1aXRlciIsImlhdCI6MTc4MTY0NDc1MywiZXhwIjoxNzgxNjQ0ODEzfQ.wlontYQYdl4Dq5flLjhTc1lGcITfKwjB97LQRDHuHv8",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\" : \"fca25837-4a8c-4f4d-af7a-3e8b21cfe6a8.d89d7add-ae1f-4402-88be-7113144783c0\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/refresh",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verify-email-with-otp",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"rorana2420@lovadio.com\",\r\n    \"otp\": \"842770\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/verify-email",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "verify-email"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "resend-verification-code",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\" : \"xasilic187@ocuser.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/resend-verification",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "resend-verification"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout-(one)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{   \r\n    \"refreshToken\": \"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout-all",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/logout-all",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "logout-all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change-password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{   \r\n    \"oldPassword\": \"\",\r\n    \"newPassword\": \"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/change-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "forgot-password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{   \r\n    \"email\": \"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/forgot-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "reset-password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{   \r\n    \"email\": \"\",\r\n    \"otp\": \"\",\r\n    \"newPassword\": \"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/auth/reset-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "google",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/auth/google",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "auth",
+                "google"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "organization",
+      "item": [
+        {
+          "name": "create-organization",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTU1ZTk3OC1kNDNhLTRhNjYtODgwMS0zNjlhODdlYzlmZTgiLCJlbWFpbCI6ImR1bW15QHJlY3J1aXRlci5jb20iLCJyb2xlIjoicmVjcnVpdGVyIiwiaWF0IjoxNzgyMDgxMTEzLCJleHAiOjE3ODIwODIwMTN9.qdbZ8tCQKFQjWtYO2xkOMQ7Xrir4YCyvmg8J5QFk8d8",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{   \r\n   \"name\" : \"Adobe India\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "my-organizations",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTU1ZTk3OC1kNDNhLTRhNjYtODgwMS0zNjlhODdlYzlmZTgiLCJlbWFpbCI6ImR1bW15QHJlY3J1aXRlci5jb20iLCJyb2xlIjoicmVjcnVpdGVyIiwiaWF0IjoxNzgyMDc5MDI0LCJleHAiOjE3ODIwNzk5MjR9.zMra7FaM65GWyRtVrIlS2e4g5fdG-OmHl82wMinX29Y",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/my-organizations",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "my-organizations"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-organization (public, using orgID)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/82c4654c-fc0b-4553-bae5-51bff32bec30",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "82c4654c-fc0b-4553-bae5-51bff32bec30"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-organization-jobs (public, using orgID, with queryparams)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/82c4654c-fc0b-4553-bae5-51bff32bec30/jobs",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "82c4654c-fc0b-4553-bae5-51bff32bec30",
+                "jobs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "newsletter",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "employmentType",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "experienceLevel",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "isRemote",
+                  "value": "false",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "location",
+                  "value": "mumbai",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "salaryMin",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "salaryMax",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "title",
+                  "value": "writer",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "join-organization",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzY2Q5ZTY1NS1jZDU1LTQ2YmEtYjc5My00MzU3MjlhMWUzMDEiLCJlbWFpbCI6InJvcmFuYTI0MjBAbG92YWRpby5jb20iLCJyb2xlIjoicmVjcnVpdGVyIiwiaWF0IjoxNzgzMzc5MTExLCJleHAiOjE3ODMzODAwMTF9.mX6Asd5ownEGS2WVGovIuJBv1yzZJ6koohoYpy9bmLA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"orgId\": \"82c4654c-fc0b-4553-bae5-51bff32bec30\", \r\n    \"inviteCode\": \"70116052\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/join",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "join"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "regenerate-invite-code",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODIwNzU3MDgsImV4cCI6MTc4MjA3NjYwOH0.y5lOibMPhHZ2XURxcRWObal_N9jLfHLuh5fiqJ-eLJg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    // org role = member\r\n    // \"email\": \"dummy@recruiter.com\",\r\n    // \"password\": \"12345678\"\r\n\r\n    // org role = ADMIN\r\n    \"email\": \"xasilic187@ocuser.com\",\r\n    \"password\": \"12345678\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/0913ffa5-a357-401f-911f-5b24f6d0e384/regenerate-invite-code",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "0913ffa5-a357-401f-911f-5b24f6d0e384",
+                "regenerate-invite-code"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update-organization",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTU1ZTk3OC1kNDNhLTRhNjYtODgwMS0zNjlhODdlYzlmZTgiLCJlbWFpbCI6ImR1bW15QHJlY3J1aXRlci5jb20iLCJyb2xlIjoicmVjcnVpdGVyIiwiaWF0IjoxNzgyMDc1NDc4LCJleHAiOjE3ODIwNzYzNzh9.IjRWytLRJ_XSig_tVDvYFtISyXbPNLxkefZ6ZSlm3jo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"name\": \"Adobe India\",\r\n   \"description\": \"Hello, Galaxy!!!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/0913ffa5-a357-401f-911f-5b24f6d0e384",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "0913ffa5-a357-401f-911f-5b24f6d0e384"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-members (public, using orgID)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"name\": \"Adobe India\",\r\n   \"description\": \"Hello, Galaxy!!\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/0913ffa5-a357-401f-911f-5b24f6d0e384/members",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "0913ffa5-a357-401f-911f-5b24f6d0e384",
+                "members"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "promote-member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODIwNzcyNzMsImV4cCI6MTc4MjA3ODE3M30.fE2mZOOzQzwZmRyDablguR3PVExnEdu5BSKRjcIGm2U",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/members/:userId/promote",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "members",
+                ":userId",
+                "promote"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "0913ffa5-a357-401f-911f-5b24f6d0e384"
+                },
+                {
+                  "key": "userId",
+                  "value": "0e55e978-d43a-4a66-8801-369a87ec9fe8",
+                  "description": "userId to promote"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "demote-member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODIwODE2NjIsImV4cCI6MTc4MjA4MjU2Mn0.t9Nb76jvCHjMcGGiq5cX1hFFDH3hVeR1haFId0pOJmg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/members/:userId/demote",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "members",
+                ":userId",
+                "demote"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                },
+                {
+                  "key": "userId",
+                  "value": "0e55e978-d43a-4a66-8801-369a87ec9fe8",
+                  "description": "userId to demote"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "leave-org",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODIwNzkyMjksImV4cCI6MTc4MjA4MDEyOX0.2IXzV5ur-okSo3KCaCGolahEBv_OLJWp7OhAktMDrU8",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/leave",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "leave"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "0913ffa5-a357-401f-911f-5b24f6d0e384"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "remove-member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTU1ZTk3OC1kNDNhLTRhNjYtODgwMS0zNjlhODdlYzlmZTgiLCJlbWFpbCI6ImR1bW15QHJlY3J1aXRlci5jb20iLCJyb2xlIjoicmVjcnVpdGVyIiwiaWF0IjoxNzgyMDgwNDgzLCJleHAiOjE3ODIwODEzODN9.jXYCnPGiMqgIAl56YWGrIYAvhna9OIn7FKZeuHIEADI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/members/:userId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "members",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "0913ffa5-a357-401f-911f-5b24f6d0e384"
+                },
+                {
+                  "key": "userId",
+                  "value": "0e55e978-d43a-4a66-8801-369a87ec9fe8"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-org",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTU1ZTk3OC1kNDNhLTRhNjYtODgwMS0zNjlhODdlYzlmZTgiLCJlbWFpbCI6ImR1bW15QHJlY3J1aXRlci5jb20iLCJyb2xlIjoicmVjcnVpdGVyIiwiaWF0IjoxNzgyMDgxMTEzLCJleHAiOjE3ODIwODIwMTN9.qdbZ8tCQKFQjWtYO2xkOMQ7Xrir4YCyvmg8J5QFk8d8",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": \"0913ffa5-a357-401f-911f-5b24f6d0e384\", \r\n    \"inviteCode\": \"46223192\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "0913ffa5-a357-401f-911f-5b24f6d0e384"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verify-domain-req",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODMzNjcyMTMsImV4cCI6MTc4MzM2ODExM30.hLiu6Y0XRneJ0v7pOfSHmGAOZ58K0HxQo1TDBheFHO0",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"domain\": \"adobe.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/request-verification",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "request-verification"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verify-domain-dev",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "developer-key",
+                "value": "candy-crush-level-843839431-powerslash-34djQIe3432dmNQ3s",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"reqId\": \"c1d4cca9-62cd-4fc7-9ab6-ff522c0986e5\",\r\n    \"status\": \"verified\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/verify",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                "verify"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-dashboard",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODMzNzM4MTksImV4cCI6MTc4MzM3NDcxOX0.5lmjK-xi0-1IGZdT2KjKkfExiopHns058peCjMR_taE",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"domain\": \"adobe.com\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/dashboard/:orgId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "dashboard",
+                ":orgId"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "clear-dashboard-cache",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODMzNzM4MTksImV4cCI6MTc4MzM3NDcxOX0.5lmjK-xi0-1IGZdT2KjKkfExiopHns058peCjMR_taE",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "developer-key",
+                "value": "candy-crush-level-843839431-powerslash-34djQIe3432dmNQ3s",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"domain\": \"adobe.com\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/dashboard/clear-cache",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "dashboard",
+                "clear-cache"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "report-org",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOWQwYzg0NC01NzMzLTRjMDMtODIyYS0wMmM5ODkzMGZhNTIiLCJlbWFpbCI6Impva2FmMjkwODJAZmlzaG5vbmUuY29tIiwicm9sZSI6ImNhbmRpZGF0ZSIsImlhdCI6MTc4MzM3OTIwMCwiZXhwIjoxNzgzMzgwMTAwfQ.PUVYV4N8-wpKtjWIug8KDwrX3QR2zNjFF2a_Lp0eT9c",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"reason\": \"scam\",\r\n    \"description\": \"hey dude, this organization scammed me.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/report",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "report"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "jobs",
+      "item": [
+        {
+          "name": "create-job",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0MjU5MjEsImV4cCI6MTc4MjQyNjgyMX0.jyB2cdmX0DBPIL5NPfjViPl-427YXFXL7BE3a0gN_fI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Content Writer\",\r\n    \"description\": \"Looking for a content writer for our newsletter, blog site!\",\r\n    \"location\": \"Mumbai\",\r\n    \"isRemote\": false,\r\n    \"employmentType\": \"full_time\",\r\n    \"experienceLevel\": \"mid\",\r\n    \"salaryMin\": 25000,\r\n    \"salaryMax\": 35000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/jobs",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "jobs"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update-job",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0MjcyNjMsImV4cCI6MTc4MjQyODE2M30.yeu1zYS00j7zHi8bbXILDkpZMB4ErlehJa7F2dgMCD8",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"experienceLevel\": \"senior\",\r\n    \"salaryMin\": 30000,\r\n    \"salaryMax\": 40000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/jobs/:jobId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "jobs",
+                ":jobId"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                },
+                {
+                  "key": "jobId",
+                  "value": "897494d2-6a5c-4eac-b52d-3c67ad1cf0b3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-job",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0MjcyNjMsImV4cCI6MTc4MjQyODE2M30.yeu1zYS00j7zHi8bbXILDkpZMB4ErlehJa7F2dgMCD8",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/jobs/:jobId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "jobs",
+                ":jobId"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                },
+                {
+                  "key": "jobId",
+                  "value": "897494d2-6a5c-4eac-b52d-3c67ad1cf0b3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-jobs (public)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0MjcyNjMsImV4cCI6MTc4MjQyODE2M30.yeu1zYS00j7zHi8bbXILDkpZMB4ErlehJa7F2dgMCD8",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/jobs",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "jobs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-job-by-jobId (public)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0MjcyNjMsImV4cCI6MTc4MjQyODE2M30.yeu1zYS00j7zHi8bbXILDkpZMB4ErlehJa7F2dgMCD8",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/jobs/:jobId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "jobs",
+                ":jobId"
+              ],
+              "variable": [
+                {
+                  "key": "jobId",
+                  "value": "897494d2-6a5c-4eac-b52d-3c67ad1cf0b3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-jobs-by-orgId (public)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0Mjk4NjMsImV4cCI6MTc4MjQzMDc2M30.UGz7Iw8aPLBMtgec12kJRus0j6D3_kP-F3f561fME5s",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/jobs/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "jobs",
+                ""
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec31"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-jobs-by-recruiter (public)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0Mjk4NjMsImV4cCI6MTc4MjQzMDc2M30.UGz7Iw8aPLBMtgec12kJRus0j6D3_kP-F3f561fME5s",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/jobs/recruiter/:userId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "jobs",
+                "recruiter",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                },
+                {
+                  "key": "userId",
+                  "value": "a9fa55f9-9e35-41ff-af95-134db4222d81"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-job-by-orgId&jobId (public)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0Mjk4NjMsImV4cCI6MTc4MjQzMDc2M30.UGz7Iw8aPLBMtgec12kJRus0j6D3_kP-F3f561fME5s",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/jobs/:jobId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "jobs",
+                ":jobId"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                },
+                {
+                  "key": "jobId",
+                  "value": "897494d2-6a5c-4eac-b52d-3c67ad1cf0b3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-jobs-query-params",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWZhNTVmOS05ZTM1LTQxZmYtYWY5NS0xMzRkYjQyMjJkODciLCJlbWFpbCI6Inhhc2lsaWMxODdAb2N1c2VyLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODI0MzQwMzcsImV4cCI6MTc4MjQzNDkzN30.8M6tRkghFAOe6NjMxfU5hW7ymwZ0Zqpzk8E747RLa4Y",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/jobs?location=Mumbai&salaryMin=25000&salaryMax=45000&isRemote=false&employmentType=full_time&experienceLevel=senior&page=1&limit=10&sortBy=location&sortOrder=DESC&organizationId=82c4654c-fc0b-4553-bae5-51bff32bec30&search=blog site",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "jobs"
+              ],
+              "query": [
+                {
+                  "key": "location",
+                  "value": "Mumbai"
+                },
+                {
+                  "key": "salaryMin",
+                  "value": "25000"
+                },
+                {
+                  "key": "salaryMax",
+                  "value": "45000"
+                },
+                {
+                  "key": "isRemote",
+                  "value": "false"
+                },
+                {
+                  "key": "employmentType",
+                  "value": "full_time"
+                },
+                {
+                  "key": "experienceLevel",
+                  "value": "senior"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "location"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "DESC"
+                },
+                {
+                  "key": "organizationId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                },
+                {
+                  "key": "search",
+                  "value": "blog site"
+                },
+                {
+                  "key": "title",
+                  "value": "Content%20Writer",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "applications",
+      "item": [
+        {
+          "name": "apply-to-job",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzYTE2YmU1Zi1kZjA3LTQ4MTgtYmQ2Mi0yMDM0MTIxMjRiZWYiLCJlbWFpbCI6ImppbmhhbWFsZW5rYXJAZ21haWwuY29tIiwicm9sZSI6ImNhbmRpZGF0ZSIsImlhdCI6MTc4MzAzODYxMiwiZXhwIjoxNzgzMDM5NTEyfQ.0zezhUiMrlMeAMRvkxg1fDywm9pnpaj1aZuKMIcshRs",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "resume",
+                  "type": "file",
+                  "uuid": "777fbea1-b2c1-4889-9d63-075592f73113",
+                  "src": "/C:/Users/ravij/Downloads/ssic.pdf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/jobs/:jobId/apply",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "jobs",
+                ":jobId",
+                "apply"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "jobId",
+                  "value": "897494d2-6a5c-4eac-b52d-3c67ad1cf0b3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-my-applications",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOWQwYzg0NC01NzMzLTRjMDMtODIyYS0wMmM5ODkzMGZhNTIiLCJlbWFpbCI6Impva2FmMjkwODJAZmlzaG5vbmUuY29tIiwicm9sZSI6ImNhbmRpZGF0ZSIsImlhdCI6MTc4MzAzNjg2MSwiZXhwIjoxNzgzMDM3NzYxfQ.9al1QAsakojFhMW8QtAGbT4veotZdtotixqVsOHHWWI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/applications/me",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "applications",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-my-application-byId",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOWQwYzg0NC01NzMzLTRjMDMtODIyYS0wMmM5ODkzMGZhNTIiLCJlbWFpbCI6Impva2FmMjkwODJAZmlzaG5vbmUuY29tIiwicm9sZSI6ImNhbmRpZGF0ZSIsImlhdCI6MTc4Mjc3MjczNCwiZXhwIjoxNzgyNzczNjM0fQ.BE015k58W0xMryFm1zoWlISX91zaj2cqd39bcvtZjOE",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/applications/me/10e42f02-f16a-4878-aa1a-2d861d09591e",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "applications",
+                "me",
+                "10e42f02-f16a-4878-aa1a-2d861d09591e"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-my-application-byId",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOWQwYzg0NC01NzMzLTRjMDMtODIyYS0wMmM5ODkzMGZhNTIiLCJlbWFpbCI6Impva2FmMjkwODJAZmlzaG5vbmUuY29tIiwicm9sZSI6ImNhbmRpZGF0ZSIsImlhdCI6MTc4Mjc3MTE3MywiZXhwIjoxNzgyNzcyMDczfQ.KeFAlKYd197kh4755M0K2gSXTwDKeg_n2hvmRyf2TkY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/applications/me/e747612f-9cf0-4dab-8b41-df8ab05e1d02",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "applications",
+                "me",
+                "e747612f-9cf0-4dab-8b41-df8ab05e1d02"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-applicants-by-jobId-and-orgId",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTU1ZTk3OC1kNDNhLTRhNjYtODgwMS0zNjlhODdlYzlmZTgiLCJlbWFpbCI6ImR1bW15QHJlY3J1aXRlci5jb20iLCJyb2xlIjoicmVjcnVpdGVyIiwiaWF0IjoxNzgyNzcxNDkxLCJleHAiOjE3ODI3NzIzOTF9.AfxtRFDybQseLCQJ2TQINLmPJYwEhRh7cyMeG1yNJrg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/jobs/:jobId/applications",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "jobs",
+                ":jobId",
+                "applications"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                },
+                {
+                  "key": "jobId",
+                  "value": "897494d2-6a5c-4eac-b52d-3c67ad1cf0b3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update-application-status (by recruiters only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTU1ZTk3OC1kNDNhLTRhNjYtODgwMS0zNjlhODdlYzlmZTgiLCJlbWFpbCI6ImR1bW15QHJlY3J1aXRlci5jb20iLCJyb2xlIjoicmVjcnVpdGVyIiwiaWF0IjoxNzgzMDM5Njk2LCJleHAiOjE3ODMwNDA1OTZ9._z6TK4SJUIwE7Rmj7PtaYOhcfEXFQdVi9Pdti18wVic",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\": \"shortlisted\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/organization/:orgId/jobs/:jobId/applications/:appId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "organization",
+                ":orgId",
+                "jobs",
+                ":jobId",
+                "applications",
+                ":appId"
+              ],
+              "variable": [
+                {
+                  "key": "orgId",
+                  "value": "82c4654c-fc0b-4553-bae5-51bff32bec30"
+                },
+                {
+                  "key": "jobId",
+                  "value": "897494d2-6a5c-4eac-b52d-3c67ad1cf0b3"
+                },
+                {
+                  "key": "appId",
+                  "value": "435807ae-0b0c-4571-aed4-3766df95478d"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update-my-application",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOWQwYzg0NC01NzMzLTRjMDMtODIyYS0wMmM5ODkzMGZhNTIiLCJlbWFpbCI6Impva2FmMjkwODJAZmlzaG5vbmUuY29tIiwicm9sZSI6ImNhbmRpZGF0ZSIsImlhdCI6MTc4MzAzNjg2MSwiZXhwIjoxNzgzMDM3NzYxfQ.9al1QAsakojFhMW8QtAGbT4veotZdtotixqVsOHHWWI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "resume",
+                  "type": "file",
+                  "uuid": "37adcbd8-d8d2-49cf-b4a0-a5c05d3f8046",
+                  "src": "/C:/Users/ravij/Downloads/ssic.pdf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/applications/me/:appId",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "applications",
+                "me",
+                ":appId"
+              ],
+              "variable": [
+                {
+                  "key": "appId",
+                  "value": "e87233b3-b510-4325-89e0-63307f6ee8e5"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "onboarding",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0OWEzZjE3MC05NGZhLTQ5ZGItOTM4ZS1iNjgwZDg1MDk2MmQiLCJlbWFpbCI6InNoYXJtYXJhdmlqZWVlZXQ0NDQ0QGdtYWlsLmNvbSIsInJvbGUiOm51bGwsImlhdCI6MTc4MzYzMTc1NSwiZXhwIjoxNzgzNjMyNjU1fQ._HOcF5lQAKeGi_JIAz8EtsxYGkFLTuTJoXOSVwEjv9A",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"role\": \"recruiter\",\r\n    \"username\": \"jolly1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/me/onboarding",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "me",
+                "onboarding"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "prod-test",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlMDQxMGM0MS1iZTEzLTRlZTMtOTRlMy02NGQ5NGFhZTQwZWUiLCJlbWFpbCI6InNoYXJtYXJhdmlqZWVlZXQ0NDQ0QGdtYWlsLmNvbSIsInJvbGUiOiJyZWNydWl0ZXIiLCJpYXQiOjE3ODM2NDQ1NjUsImV4cCI6MTc4MzY0NTQ2NX0.LQT3BPFZqi8KxBngnRRMTpls6QJ5Tx5mCRsog9Lfn3U",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Adobe India\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://job-portal-nestjs.onrender.com/dashboard/fb390162-ff06-4e1d-be3d-0293e7520e68",
+          "protocol": "https",
+          "host": [
+            "job-portal-nestjs",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "dashboard",
+            "fb390162-ff06-4e1d-be3d-0293e7520e68"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
