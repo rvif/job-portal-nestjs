@@ -36,26 +36,41 @@ import { BullMqModule } from './bullmq/bullmq.module';
     UsersModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.getOrThrow('DB_HOST'),
-        port: Number(configService.getOrThrow('DB_PORT')),
-        username: configService.getOrThrow('DB_USERNAME'),
-        password: configService.getOrThrow('DB_PASSWORD'),
-        database: configService.getOrThrow('DB_NAME'),
-        entities: [
-          User,
-          RefreshToken,
-          Otp,
-          Organization,
-          OrganizationMember,
-          Job,
-          Application,
-          OrganizationVerificationRequest,
-          OrganizationReport,
-        ],
-        synchronize: true, // set false for production, and do manual migrations
-      }),
+      useFactory: (configService: ConfigService) => {
+        const ENV = configService.getOrThrow<string>('ENV');
+        if (ENV === 'PROD') {
+          return {
+            type: 'postgres',
+            url: configService.getOrThrow<string>('DATABASE_URL'),
+            autoLoadEntities: true,
+            synchronize: false,
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          };
+        } else {
+          return {
+            type: 'postgres',
+            host: configService.getOrThrow('DB_HOST'),
+            port: Number(configService.getOrThrow('DB_PORT')),
+            username: configService.getOrThrow('DB_USERNAME'),
+            password: configService.getOrThrow('DB_PASSWORD'),
+            database: configService.getOrThrow('DB_NAME'),
+            entities: [
+              User,
+              RefreshToken,
+              Otp,
+              Organization,
+              OrganizationMember,
+              Job,
+              Application,
+              OrganizationVerificationRequest,
+              OrganizationReport,
+            ],
+            synchronize: true, // set false for production, and do manual migrations
+          };
+        }
+      },
     }),
     AuthModule,
     MailModule,

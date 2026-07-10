@@ -17,16 +17,35 @@ import { CommonModule } from 'src/common/common.module';
     CommonModule,
     CacheModule.registerAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        store: await redisStore({
-          socket: {
-            host: configService.getOrThrow<string>('REDIS_HOST'),
-            port: parseInt(configService.getOrThrow<string>('REDIS_PORT'), 10),
-          },
-          password: configService.getOrThrow<string>('REDIS_PASSWORD'),
-          ttl: 60 * 1000, // milliseconds, 1 min is default
-        }),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const ENV = configService.getOrThrow<string>('ENV');
+        if (ENV == 'PROD') {
+          return {
+            store: await redisStore({
+              url: configService.getOrThrow<string>('UPSTASH_REDIS_URL'),
+              socket: {
+                tls: true,
+              },
+
+              ttl: 60 * 1000, // milliseconds, 1 min is default
+            }),
+          };
+        } else {
+          return {
+            store: await redisStore({
+              socket: {
+                host: configService.getOrThrow<string>('REDIS_HOST'),
+                port: parseInt(
+                  configService.getOrThrow<string>('REDIS_PORT'),
+                  10,
+                ),
+              },
+              password: configService.getOrThrow<string>('REDIS_PASSWORD'),
+              ttl: 60 * 1000,
+            }),
+          };
+        }
+      },
     }),
   ],
   providers: [DashboardService],
